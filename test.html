@@ -1,1 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My PHP Image Search</title>
+  </head>
+  <body>
+    <!-- PHP code -->
+    <?php
+      $api_key = "563492ad6f91700001000001a847bd9d725f4f7b8849e451fe22c118";
 
+      function search_pexels_api($search_term) {
+        // Set up the API endpoint URL
+        $endpoint_url = "https://api.pexels.com/v1/search?query=$search_term&per_page=1&page=1";
+
+        // Set up the API key as a header
+        $headers = array(
+          "Authorization: $api_key"
+        );
+
+        // Set up cURL options
+        $options = array(
+          CURLOPT_URL => $endpoint_url,
+          CURLOPT_HTTPHEADER => $headers,
+          CURLOPT_RETURNTRANSFER => true
+        );
+
+        // Initialize cURL
+        $ch = curl_init();
+
+        // Set cURL options
+        curl_setopt_array($ch, $options);
+
+        // Make the request
+        $response = curl_exec($ch);
+
+        // Close cURL
+        curl_close($ch);
+
+        // Return the response
+        return $response;
+      }
+
+      function get_image_link($search_term) {
+        // Search the Pexels API for images with the given search term
+        $response = search_pexels_api($search_term);
+
+        // Decode the JSON response
+        $response_data = json_decode($response, true);
+
+        // Get the direct link to the
+        $image_link = $response_data["photos"][0]["src"]["original"];
+
+    // Return the image link
+    return $image_link;
+  }
+
+  // Get the search term from the URL
+  $search_term = $_GET["search"];
+
+  // Get the direct link to the image from the Pexels API
+  $image_link = get_image_link($search_term);
+
+  // Echo the image link
+  echo $image_link;
+?>
+ </body>
+</html>
